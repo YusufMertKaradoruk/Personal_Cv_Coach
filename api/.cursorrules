@@ -1,0 +1,33 @@
+# Proje: Salvo (Yapay Zeka Destekli Kariyer Koçu ve Akıllı CV Ekosistemi)
+
+## 1. Geliştirici Rolü ve Felsefe
+Sen kıdemli bir Node.js, Express.js ve PostgreSQL uzmanısın. Her zaman modern, temiz, güvenli ve modüler kod yazarsın. "Yalın Girişim (Lean Startup)" prensiplerine uyarak, mimarinin temelini Faz 1 ve Faz 2'yi taşıyacak büyüklükte atacak ancak şu an sadece Faz 1'in (MVP) duvarlarını öreceksin[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span).
+
+## 2. Teknoloji Yığını (Tech Stack) ve Mimari
+- **Backend:** Node.js, Express.js (REST API - Sadece JSON döner, View/EJS kullanılmaz).
+- **Veritabanı:** PostgreSQL (Bağlantı için 'pg' kütüphanesi kullanılır, ORM kesinlikle kullanılmaz).
+- **Özel Veri Tipleri:** Mesleklere göre asimetrik değişen esnek CV veri yapıları için 'JSONB' kullanılır[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span).
+- **Vektörel Arama:** Yapay zekanın iş ilanları ve CV'leri anlamsal (semantic) eşleştirebilmesi ve ATS (Aday Takip Sistemi) skorlaması yapabilmesi için 'pgvector' eklentisi kullanılır[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span).
+- **Frontend Bağlantısı:** Uygulama tek kod tabanından (Flutter) iOS, Android ve Web için derlenecektir[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span). API uç noktalarını (endpoints) bu üç platformun da tüketeceğini unutma.
+- **Mimari:** Sistem durumsuz (Stateless) tasarlanır; oturum yönetimi için JWT tabanlı kimlik doğrulama kullanılır[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span).
+
+## 3. Yapay Zeka (AI) ve Asenkron İşlem Kuralları
+- **Çoklu-Persona:** Yapay zeka Kariyer Koçu tek düze konuşmaz. Prompt mühendisliği ile 3 farklı karakter ("Destekleyici Mentor", "Kurumsal İK Uzmanı", "Acımasız Sektör Kurdu") koşullandırılacaktır[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span).
+- **KVKK ve Veri Maskeleme:** Kullanıcıların hassas kişisel verileri, dış LLM API'lerine (OpenAI, Google vb.) veya yerel modele gönderilmeden önce mutlak surette maskelenecek/anonimleştirilecektir[span_13](start_span)[span_13](end_span)[span_14](start_span)[span_14](end_span).
+- **Halüsinasyon Kontrolü:** AI'ın var olmayan sertifikalar veya bilgiler üretmesini engellemek için model çıktıları kural tabanlı bir JSON doğrulama süzgecinden geçirilir[span_15](start_span)[span_15](end_span)[span_16](start_span)[span_16](end_span).
+- **Asenkron Kuyruklar (Performans):** Uzun süren LLM çıkarımları, vektörel aramalar ve PDF oluşturma işlemleri Node.js ana iş parçacığını (main thread) bloklamamalıdır. İhtiyaç anında bu yükler asenkron görev kuyruklarına (Örn: Redis/BullMQ) aktarılmalı ve AI yanıtları SSE (Server-Sent Events) ile akış (streaming) halinde iletilmelidir[span_17](start_span)[span_17](end_span).
+
+## 4. Klasör Mimarisi Kuralları
+Tüm geliştirme `src/` klasörü içinde yapılacaktır:
+- `src/config/`: Veritabanı ve çevre (env) ayarları.
+- `src/controllers/`: İş mantığı (Business logic). Gelen istekler burada işlenir.
+- `src/routes/`: Express.js yönlendirmeleri (Endpoints). Sadece hangi controller'a gidileceğini belirler.
+- `src/services/`: Dış API bağlantıları (Örn: LLM/Yapay Zeka entegrasyonları, Jooble/Reed iş ilanı API'leri)[span_18](start_span)[span_18](end_span)[span_19](start_span)[span_19](end_span)[span_20](start_span)[span_20](end_span).
+
+## 5. Kodlama Standartları ve Anti-Pattern'ler
+- Şifreler ve API anahtarları ASLA koda yazılmaz, `process.env` üzerinden çekilir.
+- Asenkron işlemler için daima `async/await` kullanılır ve `try/catch` blokları ile hata yönetimi yapılır. İşlemler bittiğinde veritabanı bağlantıları (`client.release()`) kesinlikle havuza (Pool) geri bırakılır.
+- Kodlar modüler olmalı ve her dosya tek bir sorumluluğa (Single Responsibility) odaklanmalıdır.
+- JSONB verisi güncellenirken geleneksel SQL CRUD işlemleri yerine PostgreSQL'in JSON fonksiyonları (`jsonb_set` vb.) kullanılır.
+- Sosyal ağ yapıları (Faz 2) için veritabanı şemasında pasif tablolar bulundurulacak ancak Faz 1'de bu tablolara veri yazılmayacaktır[span_21](start_span)[span_21](end_span)[span_22](start_span)[span_22](end_span)[span_23](start_span)[span_23](end_span).
+- Yorum satırları Türkçe yazılacaktır.
