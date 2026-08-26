@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const { connectDB } = require('./src/config/db');
 const authRoutes = require('./src/routes/authRoutes');
+const cvRoutes = require('./src/routes/cvRoutes');
 
 // Express uygulamasını başlatıyoruz
 const app = express();
@@ -27,6 +28,7 @@ app.get('/api/status', (req, res) => {
 
 // === ROTALAR (ROUTES) ===
 app.use('/api/auth', authRoutes);
+app.use('/api/cv', cvRoutes);
 
 // === SUNUCUYU AYAĞA KALDIRMA ===
 app.listen(PORT, async () => {
