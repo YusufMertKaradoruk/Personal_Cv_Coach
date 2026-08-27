@@ -6,6 +6,8 @@ const cors = require('cors');
 const { connectDB } = require('./src/config/db');
 const authRoutes = require('./src/routes/authRoutes');
 const cvRoutes = require('./src/routes/cvRoutes');
+const aiRoutes = require('./src/routes/aiRoutes');
+
 
 // Express uygulamasını başlatıyoruz
 const app = express();
@@ -17,18 +19,10 @@ app.use(cors());
 // Gelen JSON formatındaki verileri (Örn: CV verisi) backend'in okuyabilmesi için:
 app.use(express.json());
 
-// === TEST ROTASI ===
-// Sunucunun çalışıp çalışmadığını kontrol etmek için basit bir GET isteği
-app.get('/api/status', (req, res) => {
-  res.json({
-    durum: 'Başarılı',
-    mesaj: 'Salvo API tıkır tıkır çalışıyor! 🚀',
-  });
-});
-
 // === ROTALAR (ROUTES) ===
 app.use('/api/auth', authRoutes);
 app.use('/api/cv', cvRoutes);
+app.use('/api/ai', aiRoutes);
 
 // === SUNUCUYU AYAĞA KALDIRMA ===
 app.listen(PORT, async () => {
