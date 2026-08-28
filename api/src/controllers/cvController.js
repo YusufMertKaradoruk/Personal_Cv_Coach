@@ -111,8 +111,45 @@ const updateCv = async (req, res) => {
   }
 };
 
+/**
+ * Herkese açık dijital kartvizit.
+ * Token doğrulaması yoktur; yalnızca CV UUID'si ile okunur.
+ */
+const getPublicCv = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const sonuc = await pool.query(
+      `SELECT id, meslek_grubu, cv_verisi, ats_skoru, guncellenme_tarihi
+       FROM cvler
+       WHERE id = $1`,
+      [id]
+    );
+
+    if (sonuc.rows.length === 0) {
+      return res.status(404).json({
+        durum: 'Hata',
+        mesaj: 'Kartvizit/CV bulunamadı.',
+      });
+    }
+
+    return res.status(200).json({
+      durum: 'Başarılı',
+      mesaj: 'Kartvizit getirildi.',
+      cv: sonuc.rows[0],
+    });
+  } catch (error) {
+    console.error('[Salvo CV] Genel kartvizit hatası:', error);
+    return res.status(500).json({
+      durum: 'Hata',
+      mesaj: 'Sunucu hatası. Kartvizit getirilemedi.',
+    });
+  }
+};
+
 module.exports = {
   createCv,
   getMyCvs,
   updateCv,
+  getPublicCv,
 };
